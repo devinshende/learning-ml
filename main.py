@@ -1,13 +1,31 @@
+import s3fs
+import zarr
+import json
+from tqdm import tqdm
 import pandas as pd
+import pickle
 from pprint import pprint
-import time
+import os
+from dotenv import load_dotenv
 
-home_data = pd.read_csv('housing.csv', usecols = ['longitude', 'latitude', 'median_house_value'])
-print(home_data.head())
+load_dotenv()
 
+endpoint = 'https://wifire-data.sdsc.edu:9000'
+access_key = os.getenv("ACCESS_KEY")
+secret_key = os.getenv("SECRET_KEY")
 
-import seaborn as sns
+fs = s3fs.S3FileSystem(key=access_key,
+    secret=secret_key,
+    client_kwargs={
+        'endpoint_url': endpoint,
+        'verify': False
+    },
+    skip_instance_cache=False
+)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 
-sns.scatterplot(data = home_data, x = 'longitude', y = 'latitude', hue = 'median_house_value')
+name = 'quicfire.zarr'
+bucket = 'burnpro3d/d'
 
-time.sleep(10)
+root = list(fs.ls(bucket))
+
+# simulation_paths = []
